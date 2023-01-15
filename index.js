@@ -1,27 +1,43 @@
-const argv = require("yargs").argv;
+const { program } = require("commander");
+const {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+} = require("./contacts");
 
-// TODO: рефакторить
-function invokeAction({ action, id, name, email, phone }) {
+program 
+.option("-a, --action <type>", "choose action")
+.option("-i, --id <type>", "user id")
+.option("-n, --name <type>", "user name")
+.option("-e, --email <type>", "user email")
+.option("-p, --phone <type>", "user phone");
+
+program.parse();
+
+const argv = program.opts();
+
+const invokeAction = async ({ action, id, name, email, phone }) => {
   switch (action) {
     case "list":
-      // ...
+      const allContacts = await listContacts();
+      console.table(allContacts);
       break;
-
     case "get":
-      // ... id
+      const oneContact = await getContactById(id);
+      console.log(oneContact);
       break;
-
     case "add":
-      // ... name email phone
+      const newContact = await addContact({ name, email, phone });
+      console.log(newContact);
       break;
-
     case "remove":
-      // ... id
+      const removedContact = await removeContact(id);
+      console.log(removedContact);
       break;
-
     default:
       console.warn("\x1B[31m Unknown action type!");
   }
-}
+};
 
 invokeAction(argv);
